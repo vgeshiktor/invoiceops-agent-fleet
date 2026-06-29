@@ -5,15 +5,19 @@ from __future__ import annotations
 from pathlib import Path
 
 
-SUPPORTED_EXTENSIONS = {".txt", ".md", ".json"}
+DEFAULT_SUPPORTED_EXTENSIONS = (".txt", ".md", ".json")
 
 
-def list_input_files(input_dir: str | Path) -> list[Path]:
+def list_input_files(
+    input_dir: str | Path,
+    supported_extensions: tuple[str, ...] = DEFAULT_SUPPORTED_EXTENSIONS,
+) -> list[Path]:
     root = Path(input_dir)
+    allowed_extensions = {extension.lower() for extension in supported_extensions}
     return sorted(
         path
         for path in root.iterdir()
-        if path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
+        if path.is_file() and path.suffix.lower() in allowed_extensions
     )
 
 

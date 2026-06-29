@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from invoiceops.tools.file_reader import SUPPORTED_EXTENSIONS, read_document
+from invoiceops.tools.file_reader import DEFAULT_SUPPORTED_EXTENSIONS, read_document
 
 
 class LocalFilesServer:
@@ -13,10 +13,11 @@ class LocalFilesServer:
         self.output_root = Path(output_root).resolve()
 
     def list_documents(self) -> list[str]:
+        allowed_extensions = {extension.lower() for extension in DEFAULT_SUPPORTED_EXTENSIONS}
         return sorted(
             path.name
             for path in self.input_root.iterdir()
-            if path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
+            if path.is_file() and path.suffix.lower() in allowed_extensions
         )
 
     def read_document(self, relative_path: str) -> str:

@@ -60,7 +60,7 @@ The eval suite covers extraction accuracy, policy routing, duplicate detection, 
 - `read_document`
 - `write_output`
 
-It is intentionally restricted to reading from `samples/inbox` and writing to `outputs`. There is no arbitrary filesystem access and no network access.
+It accepts configurable input and output roots and prevents path escapes outside those sandboxed directories. There is no arbitrary filesystem access and no network access.
 
 ## Scope boundaries
 

@@ -9,12 +9,13 @@ from invoiceops.schemas import InvoiceRecord
 
 def detect_duplicates(invoices: list[InvoiceRecord]) -> list[InvoiceRecord]:
     updated = [invoice.model_copy(deep=True) for invoice in invoices]
-    by_invoice_number: dict[str, list[InvoiceRecord]] = defaultdict(list)
+    by_invoice_number: dict[tuple[str, str], list[InvoiceRecord]] = defaultdict(list)
     by_vendor_amount_date: dict[tuple[str, float, str], list[InvoiceRecord]] = defaultdict(list)
 
     for invoice in updated:
-        if invoice.invoice_number:
-            by_invoice_number[invoice.invoice_number.casefold()].append(invoice)
+        if invoice.invoice_number and (invoice.vendor_tax_id or invoice.vendor_name):
+            vendor_key = (invoice.vendor_tax_id or invoice.vendor_name or "").casefold()
+            by_invoice_number[(vendor_key, invoice.invoice_number.casefold())].append(invoice)
         if invoice.vendor_name and invoice.total is not None and invoice.invoice_date:
             key = (invoice.vendor_name.casefold(), invoice.total, invoice.invoice_date)
             by_vendor_amount_date[key].append(invoice)

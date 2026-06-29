@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 from invoiceops.schemas import DocumentType, InvoiceRecord
 
@@ -90,4 +91,14 @@ def _as_string(value: object) -> str | None:
 def _as_float(value: object) -> float | None:
     if value in (None, ""):
         return None
-    return float(value)
+    if isinstance(value, (int, float)):
+        return float(value)
+
+    normalized = str(value).strip()
+    normalized = normalized.replace(",", "")
+    normalized = re.sub(r"^[A-Za-z]{3}\s+", "", normalized)
+    normalized = re.sub(r"^[^\d+-]+", "", normalized)
+
+    if not normalized or not re.fullmatch(r"[-+]?\d+(?:\.\d+)?", normalized):
+        return None
+    return float(normalized)

@@ -21,8 +21,6 @@ def detect_document_type(
         return "invoice"
     if first_line == "receipt":
         return "receipt"
-    if any(pattern in lowered for pattern in runtime_config.irrelevant_patterns):
-        return "irrelevant"
 
     try:
         payload = json.loads(raw_text)
@@ -38,6 +36,8 @@ def detect_document_type(
         return "invoice"
     if "receipt number:" in lowered:
         return "receipt"
+    if any(pattern in lowered for pattern in runtime_config.irrelevant_patterns):
+        return "irrelevant"
     return "unknown"
 
 

@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
 
+from invoiceops.config import InputConfig, InvoiceOpsConfig
 from invoiceops.pipeline import run_pipeline
+from invoiceops.tools.invoice_parser import parse_invoice_text
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -35,3 +37,56 @@ def test_run_pipeline_matches_expected_invoice_snapshot(tmp_path: Path) -> None:
     expected_invoices = json.loads((EXPECTED_DIR / "expected_invoices.json").read_text())
 
     assert [invoice.model_dump(mode="json") for invoice in bundle.invoices] == expected_invoices
+
+
+def test_parse_invoice_text_tolerates_formatted_amounts() -> None:
+    invoice = parse_invoice_text(
+        "\n".join(
+            [
+                "Invoice",
+                "Vendor: Amount Vendor",
+                "Tax ID: 514123456",
+                "Invoice Number: INV-AMT-1",
+                "Date: 2026-06-20",
+                "Currency: ILS",
+                "Subtotal: 1,000.00",
+                "VAT: ILS 180.00",
+                "Total: not-a-number",
+            ]
+        ),
+        source_file="formatted_amounts.txt",
+        document_type="invoice",
+    )
+
+    assert invoice.subtotal == 1000.0
+    assert invoice.vat == 180.0
+    assert invoice.total is None
+
+
+def test_run_pipeline_honors_custom_supported_extensions(tmp_path: Path) -> None:
+    input_dir = tmp_path / "inbox"
+    input_dir.mkdir()
+    (input_dir / "invoice.custom").write_text(
+        "\n".join(
+            [
+                "Invoice",
+                "Vendor: Custom Extension Vendor",
+                "Tax ID: 511111111",
+                "Invoice Number: CUST-1",
+                "Date: 2026-06-20",
+                "Currency: ILS",
+                "Subtotal: 100.00",
+                "VAT: 18.00",
+                "Total: 118.00",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    bundle = run_pipeline(
+        input_dir=input_dir,
+        output_dir=tmp_path / "outputs",
+        config=InvoiceOpsConfig(input=InputConfig(supported_extensions=(".custom",))),
+    )
+
+    assert [invoice.source_file for invoice in bundle.invoices] == ["invoice.custom"]

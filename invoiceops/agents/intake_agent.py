@@ -17,7 +17,7 @@ class IntakeAgent:
     def run(self, input_dir: str | Path) -> list[DocumentCandidate]:
         documents: list[DocumentCandidate] = []
 
-        for path in list_input_files(input_dir):
+        for path in list_input_files(input_dir, self._config.input.supported_extensions):
             raw_text = read_document(path)
             document_type = detect_document_type(raw_text, self._config.security)
             risk_flags = scan_for_prompt_injection(raw_text, self._config.security)

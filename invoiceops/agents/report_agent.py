@@ -33,7 +33,12 @@ class ReportAgent:
 
         write_json(invoices_path, invoices)
         write_csv(accounting_export_path, invoices)
-        write_markdown_report(exceptions_report_path, invoices, total_documents_scanned)
+        write_markdown_report(
+            exceptions_report_path,
+            invoices,
+            total_documents_scanned,
+            accounting_export_path.name,
+        )
         write_review_queue(review_queue_path, invoices)
 
         return (

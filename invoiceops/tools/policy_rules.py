@@ -42,9 +42,13 @@ def apply_policy(
         updated.add_issue("amount_exceeds_limit")
 
     if updated.invoice_date:
-        parsed_date = date.fromisoformat(updated.invoice_date)
-        if parsed_date > date.today():
-            updated.add_issue("date_in_future")
+        try:
+            parsed_date = date.fromisoformat(updated.invoice_date)
+        except ValueError:
+            updated.add_issue("invalid_invoice_date")
+        else:
+            if parsed_date > date.today():
+                updated.add_issue("date_in_future")
 
     updated.finalize_status()
     return updated

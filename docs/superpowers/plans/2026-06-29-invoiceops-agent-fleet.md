@@ -10,7 +10,7 @@
 
 ---
 
-### Delivered scope
+## Delivered scope
 
 - CLI command: `python -m invoiceops run --input samples/inbox --output outputs`
 - Shared Pydantic models: `DocumentCandidate`, `InvoiceRecord`, and `ExportBundle`
@@ -19,7 +19,7 @@
 - Sample fixtures and snapshots aligned to the exact MVP scenarios
 - Evals for extraction, policy, duplicates, security, CLI outputs, and MCP path restrictions
 
-### Hard boundaries
+## Hard boundaries
 
 - Local-only input and output
 - No OCR or PDF implementation in the current MVP

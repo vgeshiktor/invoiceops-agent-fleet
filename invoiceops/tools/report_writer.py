@@ -9,6 +9,9 @@ from pathlib import Path
 from invoiceops.schemas import InvoiceRecord
 
 
+FORMULA_PREFIXES = ("=", "+", "-", "@")
+
+
 def write_json(path: Path, invoices: list[InvoiceRecord]) -> None:
     path.write_text(
         json.dumps([invoice.model_dump(mode="json") for invoice in invoices], indent=2),
@@ -46,13 +49,13 @@ def write_csv(path: Path, invoices: list[InvoiceRecord]) -> None:
         for invoice in approved:
             writer.writerow(
                 {
-                    "source_file": invoice.source_file,
-                    "document_type": invoice.document_type,
-                    "vendor_name": invoice.vendor_name,
-                    "vendor_tax_id": invoice.vendor_tax_id,
-                    "invoice_number": invoice.invoice_number,
-                    "invoice_date": invoice.invoice_date,
-                    "currency": invoice.currency,
+                    "source_file": _sanitize_csv_value(invoice.source_file),
+                    "document_type": _sanitize_csv_value(invoice.document_type),
+                    "vendor_name": _sanitize_csv_value(invoice.vendor_name),
+                    "vendor_tax_id": _sanitize_csv_value(invoice.vendor_tax_id),
+                    "invoice_number": _sanitize_csv_value(invoice.invoice_number),
+                    "invoice_date": _sanitize_csv_value(invoice.invoice_date),
+                    "currency": _sanitize_csv_value(invoice.currency),
                     "subtotal": invoice.subtotal,
                     "vat": invoice.vat,
                     "total": invoice.total,
@@ -64,6 +67,7 @@ def write_markdown_report(
     path: Path,
     invoices: list[InvoiceRecord],
     total_documents_scanned: int,
+    accounting_export_filename: str = "accounting_export.csv",
 ) -> None:
     approved = [invoice for invoice in invoices if invoice.status == "approved"]
     needs_review = [invoice for invoice in invoices if invoice.status == "needs_review"]
@@ -107,9 +111,17 @@ def write_markdown_report(
         [
             "",
             "## Accounting Export Created",
-            f"- accounting_export.csv with {len(approved)} approved records",
+            f"- {accounting_export_filename} with {len(approved)} approved records",
             "",
         ]
     )
 
     path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _sanitize_csv_value(value: str | None) -> str | None:
+    if value is None:
+        return None
+    if value and (value[0] in FORMULA_PREFIXES or ord(value[0]) < 32):
+        return "'" + value
+    return value
