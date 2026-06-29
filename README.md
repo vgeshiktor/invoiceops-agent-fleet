@@ -1,17 +1,18 @@
 # invoiceops-agent-fleet
 
-Placeholder scaffold for an invoice operations agent fleet.
+InvoiceOps Agent Fleet is a text-first multi-agent MVP that turns local invoice fixtures into reviewed accounting artifacts.
 
-## Tech Stack
+## MVP Behavior
+- `invoiceops run --input-dir <dir> --output-dir <dir>` processes a local folder of text fixtures.
+- The pipeline classifies documents, extracts invoice fields, applies policy checks, flags duplicates, and writes review/export artifacts.
+- Human approval is supported through `interactive`, `approve-all`, and `reject-all` modes.
 
-- Python 3.11+
-- Agent runtime approach: Google ADK or lightweight in-repo agent wrappers
-- CLI: Typer preferred, `argparse` acceptable for lightweight flows
-- Schemas and validation: Pydantic
-- API layer: FastAPI optional
-- Evals: pytest
-- CSV and tabular processing: pandas optional
+## Artifacts
+- `review_queue.json`
+- `exceptions_report.md`
+- `invoices.json`
+- `accounting_export.csv`
 
-## Structure
-
-The repository contains package, sample, evaluation, and output placeholders for future implementation.
+## Notes
+- The repo keeps Google ADK integration optional and falls back to a deterministic local orchestrator when ADK is unavailable.
+- PDFs, OCR, Gmail, Drive, and external accounting integrations are intentionally out of scope for this MVP.

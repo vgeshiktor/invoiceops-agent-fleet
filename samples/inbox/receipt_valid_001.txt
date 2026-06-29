@@ -1,1 +1,6 @@
-Placeholder sample receipt fixture.
+Document-Type: receipt
+Vendor: Metro Travel Services
+Receipt-Number: RECEIPT-9001
+Receipt-Date: 2026-06-18
+Currency: USD
+Total-Amount: 89.40

@@ -1,1 +1,2 @@
-Placeholder irrelevant note fixture.
+Meeting notes: weekly reminder for the finance team lunch.
+This is not an invoice and should be quarantined as irrelevant content.

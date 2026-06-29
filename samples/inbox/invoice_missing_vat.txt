@@ -1,1 +1,6 @@
-Placeholder sample invoice missing VAT fixture.
+Document-Type: invoice
+Vendor: Northwind Catering
+Invoice-Number: INV-2002
+Invoice-Date: 2026-06-16
+Currency: USD
+Total-Amount: 430.00

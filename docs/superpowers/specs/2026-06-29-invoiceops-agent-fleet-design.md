@@ -2,57 +2,36 @@
 
 ## Goal
 
-Create a public GitHub repository named `invoiceops-agent-fleet` with the exact user-requested directory structure and placeholder-only Python project scaffold.
+Implement a runnable MVP that processes local text-based invoices and receipts into reviewed accounting artifacts through a small multi-agent pipeline.
 
 ## Scope
 
-- Create the requested package, sample, eval, output, and MCP server directories.
-- Add minimal repository metadata in `README.md`, `pyproject.toml`, and `.gitignore`.
-- Keep implementation files intentionally skeletal.
-- Initialize git, create a public GitHub repository, and push the initial commit.
+- One CLI entrypoint with `interactive`, `approve-all`, and `reject-all` approval modes.
+- Five agent stages: intake, extraction, policy, anomaly, and report.
+- Four final artifacts: `review_queue.json`, `exceptions_report.md`, `invoices.json`, and `accounting_export.csv`.
+- Deterministic local parsing and rule enforcement with optional Google ADK orchestration when available.
 
 ## Architecture
 
-The repository is a lightweight Python package scaffold centered on the `invoiceops` package. Files are created to establish clear future ownership boundaries across agents, tools, pipeline orchestration, schemas, configuration, and a local MCP server integration point.
+The pipeline remains centered on the `invoiceops` package. Each agent owns one stage of the workflow and delegates deterministic work to small helper modules in `invoiceops/tools/`.
 
-The initial commit prioritizes structure over behavior. Python modules remain placeholders, sample input and expected-output fixtures exist as inert seed files, and evaluation files exist as empty anchors for later tests.
+The Google ADK layer stays thin and optional. If ADK is installed, the project can advertise that orchestration backend; if it is not installed, the runtime falls back to the same agent sequence through a local deterministic coordinator so tests and demos remain stable.
 
-## Tech Stack
+## Runtime Behavior
 
-- Python 3.11+
-- Google ADK or lightweight in-repo agent wrappers for agent orchestration
-- Typer or `argparse` for the CLI surface
-- Pydantic for schemas and validation
-- FastAPI as an optional API layer
-- pytest for evaluations
-- pandas as an optional CSV-processing dependency
-
-## File Responsibilities
-
-- `invoiceops/`: root Python package for CLI, config, schemas, and pipeline orchestration.
-- `invoiceops/agents/`: future agent modules for intake, extraction, policy, anomaly detection, and reporting.
-- `invoiceops/tools/`: future helper utilities for parsing, validation, security, duplication checks, and reporting.
-- `invoiceops/mcp_server/`: future local MCP server package.
-- `samples/inbox/`: placeholder inbound document fixtures.
-- `samples/expected/`: placeholder expected-result fixtures.
-- `evals/`: placeholder evaluation test modules.
-- `outputs/`: tracked output directory anchor via `.gitkeep`.
-
-## Error Handling
-
-There is no runtime behavior in this scaffold beyond repository metadata validity, so error handling is limited to ensuring files exist and git/GitHub publication succeeds.
+- Intake loads local `.txt` fixtures, classifies document type, and quarantines irrelevant or prompt-injection content.
+- Extraction normalizes invoice and receipt fields into a shared schema.
+- Policy validates required fields, vendor allowlist rules, and amount thresholds.
+- Anomaly detection flags duplicate invoices by vendor and invoice number.
+- Reporting writes a provisional review queue and exceptions report, resolves approval decisions, then writes approved invoice exports.
 
 ## Testing
 
-Verification is structural:
-
-- confirm the created tree matches the requested layout
-- confirm git repository initialization and clean commit state
-- confirm GitHub repository creation and remote push
+- Evals cover extraction, policy exceptions, duplicate detection, security quarantine behavior, and CLI artifact generation.
+- The MVP is intentionally text-first and fully local so the tests can stay deterministic.
 
 ## Non-Goals
 
-- no invoice-processing logic
-- no runnable CLI workflow
-- no implemented tests
-- no forced API or data-processing runtime when those layers are not needed
+- No OCR or PDF/image ingestion.
+- No Gmail, Drive, or accounting API integrations.
+- No external model dependency required for local tests.
