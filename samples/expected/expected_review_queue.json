@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "document_type": "invoice",
+    "export_blocked": false,
+    "source_file": "invoice_valid_001.txt",
+    "status": "approve"
+  },
+  {
+    "document_type": "invoice",
+    "export_blocked": false,
+    "source_file": "invoice_missing_vat.txt",
+    "status": "approve"
+  },
+  {
+    "document_type": "invoice",
+    "export_blocked": false,
+    "source_file": "invoice_duplicate_a.txt",
+    "status": "approve"
+  },
+  {
+    "document_type": "invoice",
+    "export_blocked": false,
+    "source_file": "invoice_duplicate_b.txt",
+    "status": "approve"
+  },
+  {
+    "document_type": "irrelevant",
+    "export_blocked": true,
+    "source_file": "irrelevant_note.txt",
+    "status": "reject"
+  },
+  {
+    "document_type": "invoice",
+    "export_blocked": true,
+    "source_file": "malicious_invoice.txt",
+    "status": "reject"
+  },
+  {
+    "document_type": "receipt",
+    "export_blocked": false,
+    "source_file": "receipt_valid_001.txt",
+    "status": "approve"
+  }
+]

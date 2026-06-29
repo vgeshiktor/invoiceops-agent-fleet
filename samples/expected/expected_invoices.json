@@ -1,1 +1,52 @@
-[]
+[
+  {
+    "currency": "USD",
+    "document_type": "invoice",
+    "invoice_date": "2026-06-15",
+    "invoice_number": "INV-1001",
+    "source_file": "invoice_valid_001.txt",
+    "total_amount": 1200.5,
+    "vat_number": "IL123456789",
+    "vendor": "Acme Office Supplies"
+  },
+  {
+    "currency": "USD",
+    "document_type": "invoice",
+    "invoice_date": "2026-06-16",
+    "invoice_number": "INV-2002",
+    "source_file": "invoice_missing_vat.txt",
+    "total_amount": 430.0,
+    "vat_number": null,
+    "vendor": "Northwind Catering"
+  },
+  {
+    "currency": "USD",
+    "document_type": "invoice",
+    "invoice_date": "2026-06-17",
+    "invoice_number": "DUP-3003",
+    "source_file": "invoice_duplicate_a.txt",
+    "total_amount": 880.0,
+    "vat_number": "IL555444333",
+    "vendor": "Bluewave Printing"
+  },
+  {
+    "currency": "USD",
+    "document_type": "invoice",
+    "invoice_date": "2026-06-17",
+    "invoice_number": "DUP-3003",
+    "source_file": "invoice_duplicate_b.txt",
+    "total_amount": 880.0,
+    "vat_number": "IL555444333",
+    "vendor": "Bluewave Printing"
+  },
+  {
+    "currency": "USD",
+    "document_type": "receipt",
+    "invoice_date": "2026-06-18",
+    "invoice_number": "RECEIPT-9001",
+    "source_file": "receipt_valid_001.txt",
+    "total_amount": 89.4,
+    "vat_number": null,
+    "vendor": "Metro Travel Services"
+  }
+]

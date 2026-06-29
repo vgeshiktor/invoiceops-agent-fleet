@@ -1,1 +1,7 @@
-Placeholder sample invoice fixture.
+Document-Type: invoice
+Vendor: Acme Office Supplies
+Invoice-Number: INV-1001
+Invoice-Date: 2026-06-15
+Currency: USD
+Total-Amount: 1200.50
+VAT-Number: IL123456789

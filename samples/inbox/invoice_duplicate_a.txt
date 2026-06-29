@@ -1,1 +1,7 @@
-Placeholder duplicate invoice fixture A.
+Document-Type: invoice
+Vendor: Bluewave Printing
+Invoice-Number: DUP-3003
+Invoice-Date: 2026-06-17
+Currency: USD
+Total-Amount: 880.00
+VAT-Number: IL555444333

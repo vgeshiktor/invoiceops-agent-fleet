@@ -1,1 +1,1 @@
-"""Tools package."""
+"""Deterministic helper tools for the InvoiceOps MVP."""
