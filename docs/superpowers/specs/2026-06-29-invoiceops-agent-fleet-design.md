@@ -2,36 +2,40 @@
 
 ## Goal
 
-Implement a runnable MVP that processes local text-based invoices and receipts into reviewed accounting artifacts through a small multi-agent pipeline.
+Build a runnable local MVP that processes messy invoice and receipt fixtures into accountant-ready outputs through a deterministic multi-agent workflow.
 
 ## Scope
 
-- One CLI entrypoint with `interactive`, `approve-all`, and `reject-all` approval modes.
-- Five agent stages: intake, extraction, policy, anomaly, and report.
-- Four final artifacts: `review_queue.json`, `exceptions_report.md`, `invoices.json`, and `accounting_export.csv`.
-- Deterministic local parsing and rule enforcement with optional Google ADK orchestration when available.
+- One CLI entrypoint: `python -m invoiceops run --input samples/inbox --output outputs`
+- Five stages: intake, extraction, policy, anomaly, and reporting
+- Four artifacts: `invoices.json`, `accounting_export.csv`, `exceptions_report.md`, and `review_queue.json`
+- Shared Pydantic schemas for document intake and final invoice records
+- A minimal local-file MCP-style server restricted to `samples/inbox` and `outputs`
 
 ## Architecture
 
-The pipeline remains centered on the `invoiceops` package. Each agent owns one stage of the workflow and delegates deterministic work to small helper modules in `invoiceops/tools/`.
+The pipeline stays centered on the `invoiceops` package. Agents orchestrate the workflow, while deterministic helpers in `invoiceops/tools/` own file access, parsing, policy checks, anomaly checks, security scanning, and artifact writing.
 
-The Google ADK layer stays thin and optional. If ADK is installed, the project can advertise that orchestration backend; if it is not installed, the runtime falls back to the same agent sequence through a local deterministic coordinator so tests and demos remain stable.
+The Google ADK dependency remains optional and descriptive only. If it is installed, the runtime can report that orchestration backend; otherwise the MVP runs locally with the same deterministic logic.
 
-## Runtime Behavior
+## Runtime behavior
 
-- Intake loads local `.txt` fixtures, classifies document type, and quarantines irrelevant or prompt-injection content.
-- Extraction normalizes invoice and receipt fields into a shared schema.
-- Policy validates required fields, vendor allowlist rules, and amount thresholds.
-- Anomaly detection flags duplicate invoices by vendor and invoice number.
-- Reporting writes a provisional review queue and exceptions report, resolves approval decisions, then writes approved invoice exports.
+- Intake reads `.txt`, `.md`, and `.json` inputs, classifies `invoice`, `receipt`, `irrelevant`, or `unknown`, and flags prompt-injection-like text.
+- Extraction parses exact fixture fields such as `Vendor`, `Tax ID`, `Invoice Number`, `Date`, `Subtotal`, `VAT`, and `Total`.
+- Policy enforces required fields, VAT for Israeli invoices, positive totals, a `10,000 ILS` max total, and no future-dated invoices.
+- Anomaly detection flags duplicate invoices by invoice number or by vendor plus amount plus date, and flags VAT math mismatches.
+- Reporting writes all invoice-like records to `invoices.json`, approved records to `accounting_export.csv`, actionable exceptions to `review_queue.json`, and a Markdown summary report.
 
 ## Testing
 
-- Evals cover extraction, policy exceptions, duplicate detection, security quarantine behavior, and CLI artifact generation.
-- The MVP is intentionally text-first and fully local so the tests can stay deterministic.
+- Extraction evals verify exact field extraction on the valid sample invoice.
+- Policy evals verify approved, needs-review, skipped, and rejected routing.
+- Duplicate evals verify both duplicate fixtures become `needs_review`.
+- Security evals verify suspicious instructions produce `rejected` plus `suspicious_instruction_detected`.
+- CLI and MCP evals verify artifact creation and path-sandbox enforcement.
 
-## Non-Goals
+## Non-goals
 
-- No OCR or PDF/image ingestion.
-- No Gmail, Drive, or accounting API integrations.
-- No external model dependency required for local tests.
+- No Gmail, Drive, database, auth, UI, or cloud deployment
+- No OCR
+- No PDF processing in the current MVP implementation

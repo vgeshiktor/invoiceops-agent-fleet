@@ -1,6 +1,7 @@
-Document-Type: receipt
+Receipt
 Vendor: Metro Travel Services
-Receipt-Number: RECEIPT-9001
-Receipt-Date: 2026-06-18
-Currency: USD
-Total-Amount: 89.40
+Invoice Number: RECEIPT-9001
+Date: 2026-06-18
+Currency: ILS
+Subtotal: 89.40
+Total: 89.40

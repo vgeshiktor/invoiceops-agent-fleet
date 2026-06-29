@@ -1,7 +1,9 @@
-Document-Type: invoice
-Vendor: Bluewave Printing
-Invoice-Number: DUP-3003
-Invoice-Date: 2026-06-17
-Currency: USD
-Total-Amount: 880.00
-VAT-Number: IL555444333
+Invoice
+Vendor: Bluewave Printing Ltd
+Tax ID: 510000321
+Invoice Number: DUP-2026-007
+Date: 2026-06-19
+Currency: ILS
+Subtotal: 750.00
+VAT: 135.00
+Total: 885.00

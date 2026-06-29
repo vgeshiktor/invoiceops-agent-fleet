@@ -1,44 +1,70 @@
 [
   {
-    "document_type": "invoice",
-    "export_blocked": false,
-    "source_file": "invoice_valid_001.txt",
-    "status": "approve"
-  },
-  {
-    "document_type": "invoice",
-    "export_blocked": false,
-    "source_file": "invoice_missing_vat.txt",
-    "status": "approve"
-  },
-  {
-    "document_type": "invoice",
-    "export_blocked": false,
     "source_file": "invoice_duplicate_a.txt",
-    "status": "approve"
+    "document_type": "invoice",
+    "vendor_name": "Bluewave Printing Ltd",
+    "vendor_tax_id": "510000321",
+    "invoice_number": "DUP-2026-007",
+    "invoice_date": "2026-06-19",
+    "currency": "ILS",
+    "subtotal": 750.0,
+    "vat": 135.0,
+    "total": 885.0,
+    "status": "needs_review",
+    "issues": [
+      "duplicate_invoice"
+    ],
+    "risk_flags": []
   },
   {
-    "document_type": "invoice",
-    "export_blocked": false,
     "source_file": "invoice_duplicate_b.txt",
-    "status": "approve"
-  },
-  {
-    "document_type": "irrelevant",
-    "export_blocked": true,
-    "source_file": "irrelevant_note.txt",
-    "status": "reject"
-  },
-  {
     "document_type": "invoice",
-    "export_blocked": true,
-    "source_file": "malicious_invoice.txt",
-    "status": "reject"
+    "vendor_name": "Bluewave Printing Ltd",
+    "vendor_tax_id": "510000321",
+    "invoice_number": "DUP-2026-007",
+    "invoice_date": "2026-06-19",
+    "currency": "ILS",
+    "subtotal": 750.0,
+    "vat": 135.0,
+    "total": 885.0,
+    "status": "needs_review",
+    "issues": [
+      "duplicate_invoice"
+    ],
+    "risk_flags": []
   },
   {
-    "document_type": "receipt",
-    "export_blocked": false,
-    "source_file": "receipt_valid_001.txt",
-    "status": "approve"
+    "source_file": "invoice_missing_vat.txt",
+    "document_type": "invoice",
+    "vendor_name": "Green Cleaning Services",
+    "vendor_tax_id": "515999111",
+    "invoice_number": "GC-455",
+    "invoice_date": "2026-06-21",
+    "currency": "ILS",
+    "subtotal": 900.0,
+    "vat": null,
+    "total": 1062.0,
+    "status": "needs_review",
+    "issues": [
+      "missing_vat"
+    ],
+    "risk_flags": []
+  },
+  {
+    "source_file": "malicious_invoice.txt",
+    "document_type": "invoice",
+    "vendor_name": "Suspicious Vendor",
+    "vendor_tax_id": null,
+    "invoice_number": "BAD-001",
+    "invoice_date": "2026-06-22",
+    "currency": "ILS",
+    "subtotal": 500.0,
+    "vat": 90.0,
+    "total": 590.0,
+    "status": "rejected",
+    "issues": [],
+    "risk_flags": [
+      "suspicious_instruction_detected"
+    ]
   }
 ]
