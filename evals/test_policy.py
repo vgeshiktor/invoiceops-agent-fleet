@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from invoiceops.pipeline import run_pipeline
@@ -5,31 +6,25 @@ from invoiceops.pipeline import run_pipeline
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SAMPLES_DIR = PROJECT_ROOT / "samples" / "inbox"
+EXPECTED_DIR = PROJECT_ROOT / "samples" / "expected"
 
 
-def test_missing_vat_invoice_is_flagged_for_review(tmp_path: Path) -> None:
-    bundle = run_pipeline(
-        input_dir=SAMPLES_DIR,
-        output_dir=tmp_path / "outputs",
-        approval_mode="reject-all",
-    )
+def test_policy_statuses_match_mvp_cases(tmp_path: Path) -> None:
+    bundle = run_pipeline(input_dir=SAMPLES_DIR, output_dir=tmp_path / "outputs")
+    review_by_file = {item.source_file: item for item in bundle.review_queue}
+    invoices_by_file = {invoice.source_file: invoice for invoice in bundle.invoices}
 
-    review_item = next(
-        item for item in bundle.review_queue if item.source_file == "invoice_missing_vat.txt"
-    )
-
-    assert review_item.status == "reject"
-    assert any(finding.code == "missing_vat_number" for finding in review_item.policy_findings)
-    assert review_item.export_blocked is False
+    assert invoices_by_file["invoice_valid_001.txt"].status == "approved"
+    assert review_by_file["invoice_missing_vat.txt"].status == "needs_review"
+    assert "missing_vat" in review_by_file["invoice_missing_vat.txt"].issues
+    assert "irrelevant_note.txt" not in invoices_by_file
+    assert "irrelevant_note.txt" not in review_by_file
+    assert review_by_file["malicious_invoice.txt"].status == "rejected"
+    assert "suspicious_instruction_detected" in review_by_file["malicious_invoice.txt"].risk_flags
 
 
-def test_approve_all_mode_exports_reviewable_policy_exceptions(tmp_path: Path) -> None:
-    bundle = run_pipeline(
-        input_dir=SAMPLES_DIR,
-        output_dir=tmp_path / "outputs",
-        approval_mode="approve-all",
-    )
+def test_run_pipeline_matches_expected_review_queue_snapshot(tmp_path: Path) -> None:
+    bundle = run_pipeline(input_dir=SAMPLES_DIR, output_dir=tmp_path / "outputs")
+    expected_review_queue = json.loads((EXPECTED_DIR / "expected_review_queue.json").read_text())
 
-    approved_files = {invoice.source_file for invoice in bundle.invoices}
-
-    assert "invoice_missing_vat.txt" in approved_files
+    assert [item.model_dump(mode="json") for item in bundle.review_queue] == expected_review_queue

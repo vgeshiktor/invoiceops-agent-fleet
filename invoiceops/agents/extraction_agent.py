@@ -2,17 +2,14 @@
 
 from __future__ import annotations
 
-from invoiceops.schemas import ExtractedInvoice, InputDocument
-from invoiceops.tools.invoice_parser import parse_structured_document
+from invoiceops.schemas import DocumentCandidate, InvoiceRecord
+from invoiceops.tools.invoice_parser import parse_invoice_text
 
 
 class ExtractionAgent:
-    def run(self, documents: list[InputDocument]) -> dict[str, ExtractedInvoice]:
-        extracted: dict[str, ExtractedInvoice] = {}
-
-        for document in documents:
-            invoice = parse_structured_document(document)
-            if invoice is not None:
-                extracted[document.source_file] = invoice
-
-        return extracted
+    def run(self, documents: list[DocumentCandidate]) -> list[InvoiceRecord]:
+        return [
+            parse_invoice_text(document.raw_text, document.source_file, document.document_type)
+            for document in documents
+            if document.is_invoice_like
+        ]

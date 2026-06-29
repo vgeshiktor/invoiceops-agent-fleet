@@ -4,20 +4,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from invoiceops.schemas import InputDocument
+
+SUPPORTED_EXTENSIONS = {".txt", ".md", ".json"}
 
 
-def load_input_documents(input_dir: str | Path) -> list[InputDocument]:
+def list_input_files(input_dir: str | Path) -> list[Path]:
     root = Path(input_dir)
-    documents: list[InputDocument] = []
+    return sorted(
+        path
+        for path in root.iterdir()
+        if path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
+    )
 
-    for path in sorted(root.glob("*.txt")):
-        documents.append(
-            InputDocument(
-                source_file=path.name,
-                path=path,
-                raw_text=path.read_text(encoding="utf-8").strip(),
-            )
-        )
 
-    return documents
+def read_document(path: str | Path) -> str:
+    return Path(path).read_text(encoding="utf-8").strip()

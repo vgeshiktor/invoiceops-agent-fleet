@@ -1,7 +1,9 @@
-Document-Type: invoice
-Vendor: Acme Office Supplies
-Invoice-Number: INV-1001
-Invoice-Date: 2026-06-15
-Currency: USD
-Total-Amount: 1200.50
-VAT-Number: IL123456789
+Invoice
+Vendor: Acme Office Supplies Ltd
+Tax ID: 514123456
+Invoice Number: INV-2026-001
+Date: 2026-06-20
+Currency: ILS
+Subtotal: 1000.00
+VAT: 180.00
+Total: 1180.00

@@ -2,48 +2,54 @@
 
 from __future__ import annotations
 
+import json
+
 from invoiceops.config import SecurityConfig
-from invoiceops.schemas import DocumentType, SecurityFinding
+from invoiceops.schemas import DocumentType
 
 
-def detect_document_type(raw_text: str) -> DocumentType:
-    for line in raw_text.splitlines():
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        if key.strip().lower() == "document-type":
-            normalized = value.strip().lower()
-            if normalized in {"invoice", "receipt"}:
-                return normalized
-
+def detect_document_type(
+    raw_text: str,
+    config: SecurityConfig | None = None,
+) -> DocumentType:
+    runtime_config = config or SecurityConfig()
     lowered = raw_text.lower()
-    if "receipt" in lowered:
-        return "receipt"
-    if "invoice" in lowered:
+    stripped_lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+    first_line = stripped_lines[0].lower() if stripped_lines else ""
+
+    if first_line == "invoice":
         return "invoice"
+    if first_line == "receipt":
+        return "receipt"
+    if any(pattern in lowered for pattern in runtime_config.irrelevant_patterns):
+        return "irrelevant"
+
+    try:
+        payload = json.loads(raw_text)
+    except json.JSONDecodeError:
+        payload = None
+
+    if isinstance(payload, dict):
+        doc_type = str(payload.get("document_type", "")).strip().lower()
+        if doc_type in {"invoice", "receipt"}:
+            return doc_type
+
+    if "invoice number:" in lowered and "total:" in lowered:
+        return "invoice"
+    if "receipt number:" in lowered:
+        return "receipt"
     return "unknown"
 
 
-def scan_security_findings(raw_text: str, config: SecurityConfig) -> list[SecurityFinding]:
+def scan_for_prompt_injection(
+    raw_text: str,
+    config: SecurityConfig | None = None,
+) -> list[str]:
+    runtime_config = config or SecurityConfig()
     lowered = raw_text.lower()
-    findings: list[SecurityFinding] = []
 
-    if any(pattern in lowered for pattern in config.irrelevant_patterns):
-        findings.append(
-            SecurityFinding(
-                code="irrelevant_content",
-                severity="high",
-                message="The document does not appear to be invoice-related business input.",
-            )
-        )
-
-    if any(pattern in lowered for pattern in config.prompt_injection_patterns):
-        findings.append(
-            SecurityFinding(
-                code="prompt_injection",
-                severity="high",
-                message="The document contains prompt-injection style instructions.",
-            )
-        )
-
-    return findings
+    return [
+        "suspicious_instruction_detected"
+        for pattern in runtime_config.prompt_injection_patterns
+        if pattern in lowered
+    ][:1]

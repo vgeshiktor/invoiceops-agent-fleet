@@ -7,20 +7,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SAMPLES_DIR = PROJECT_ROOT / "samples" / "inbox"
 
 
-def test_duplicate_finding_is_attached_to_both_duplicate_invoices(tmp_path: Path) -> None:
-    bundle = run_pipeline(
-        input_dir=SAMPLES_DIR,
-        output_dir=tmp_path / "outputs",
-        approval_mode="reject-all",
-    )
+def test_duplicate_invoices_are_routed_to_review(tmp_path: Path) -> None:
+    bundle = run_pipeline(input_dir=SAMPLES_DIR, output_dir=tmp_path / "outputs")
+    review_by_file = {item.source_file: item for item in bundle.review_queue}
 
-    duplicate_items = [
-        item
-        for item in bundle.review_queue
-        if any(finding.code == "duplicate_invoice" for finding in item.anomaly_findings)
-    ]
-
-    assert {item.source_file for item in duplicate_items} == {
-        "invoice_duplicate_a.txt",
-        "invoice_duplicate_b.txt",
-    }
+    for source_file in ("invoice_duplicate_a.txt", "invoice_duplicate_b.txt"):
+        assert review_by_file[source_file].status == "needs_review"
+        assert "duplicate_invoice" in review_by_file[source_file].issues

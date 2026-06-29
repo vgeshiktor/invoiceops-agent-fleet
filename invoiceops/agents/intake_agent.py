@@ -5,31 +5,30 @@ from __future__ import annotations
 from pathlib import Path
 
 from invoiceops.config import InvoiceOpsConfig
-from invoiceops.schemas import InputDocument
-from invoiceops.tools.file_reader import load_input_documents
-from invoiceops.tools.security_scanner import detect_document_type, scan_security_findings
+from invoiceops.schemas import DocumentCandidate
+from invoiceops.tools.file_reader import list_input_files, read_document
+from invoiceops.tools.security_scanner import detect_document_type, scan_for_prompt_injection
 
 
 class IntakeAgent:
     def __init__(self, config: InvoiceOpsConfig) -> None:
         self._config = config
 
-    def run(self, input_dir: str | Path) -> list[InputDocument]:
-        documents = load_input_documents(input_dir)
+    def run(self, input_dir: str | Path) -> list[DocumentCandidate]:
+        documents: list[DocumentCandidate] = []
 
-        for document in documents:
-            document.document_type = detect_document_type(document.raw_text)
-            document.security_findings = scan_security_findings(
-                document.raw_text,
-                self._config.security,
+        for path in list_input_files(input_dir):
+            raw_text = read_document(path)
+            document_type = detect_document_type(raw_text, self._config.security)
+            risk_flags = scan_for_prompt_injection(raw_text, self._config.security)
+            documents.append(
+                DocumentCandidate(
+                    source_file=path.name,
+                    path=path,
+                    raw_text=raw_text,
+                    document_type=document_type,
+                    risk_flags=risk_flags,
+                )
             )
-            document.is_suspicious = any(
-                finding.code == "prompt_injection" for finding in document.security_findings
-            )
-            document.is_relevant = document.document_type in {"invoice", "receipt"}
-
-            if any(finding.code == "irrelevant_content" for finding in document.security_findings):
-                document.document_type = "irrelevant"
-                document.is_relevant = False
 
         return documents

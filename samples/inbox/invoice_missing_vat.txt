@@ -1,6 +1,8 @@
-Document-Type: invoice
-Vendor: Northwind Catering
-Invoice-Number: INV-2002
-Invoice-Date: 2026-06-16
-Currency: USD
-Total-Amount: 430.00
+Invoice
+Vendor: Green Cleaning Services
+Tax ID: 515999111
+Invoice Number: GC-455
+Date: 2026-06-21
+Currency: ILS
+Subtotal: 900.00
+Total: 1062.00

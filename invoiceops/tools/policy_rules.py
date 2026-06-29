@@ -2,43 +2,49 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 from invoiceops.config import PolicyConfig
-from invoiceops.schemas import ExtractedInvoice, PolicyFinding
+from invoiceops.schemas import InvoiceRecord
 
 
-def evaluate_policy(invoice: ExtractedInvoice, config: PolicyConfig) -> list[PolicyFinding]:
-    findings: list[PolicyFinding] = []
+def apply_policy(
+    invoice: InvoiceRecord,
+    config: PolicyConfig | None = None,
+) -> InvoiceRecord:
+    runtime_config = config or PolicyConfig()
+    updated = invoice.model_copy(deep=True)
 
-    required_fields = ["vendor", "invoice_date", "currency", "total_amount"]
-    if invoice.document_type == "invoice":
-        required_fields.extend(["invoice_number", "vat_number"])
+    if not updated.invoice_number:
+        updated.add_issue("missing_invoice_number")
+    if not updated.vendor_name:
+        updated.add_issue("missing_vendor_name")
+    if not updated.invoice_date:
+        updated.add_issue("missing_invoice_date")
+    if updated.total is None:
+        updated.add_issue("missing_total")
 
-    for field_name in required_fields:
-        if getattr(invoice, field_name) in {None, ""}:
-            findings.append(
-                PolicyFinding(
-                    code=f"missing_{field_name}",
-                    severity="medium",
-                    message=f"Required field '{field_name}' is missing.",
-                )
-            )
+    if (
+        updated.document_type == "invoice"
+        and updated.currency == "ILS"
+        and updated.vat is None
+    ):
+        updated.add_issue("missing_vat")
 
-    if invoice.vendor and invoice.vendor not in config.allowed_vendors:
-        findings.append(
-            PolicyFinding(
-                code="vendor_not_allowlisted",
-                severity="medium",
-                message=f"Vendor '{invoice.vendor}' is not on the MVP allowlist.",
-            )
-        )
+    if updated.total is not None and updated.total <= 0:
+        updated.add_issue("invalid_total")
 
-    if invoice.total_amount is not None and invoice.total_amount > config.max_invoice_total:
-        findings.append(
-            PolicyFinding(
-                code="amount_threshold_exceeded",
-                severity="medium",
-                message=f"Invoice total {invoice.total_amount:.2f} exceeds the configured threshold.",
-            )
-        )
+    if (
+        updated.currency == "ILS"
+        and updated.total is not None
+        and updated.total > runtime_config.max_total_ils
+    ):
+        updated.add_issue("amount_exceeds_limit")
 
-    return findings
+    if updated.invoice_date:
+        parsed_date = date.fromisoformat(updated.invoice_date)
+        if parsed_date > date.today():
+            updated.add_issue("date_in_future")
+
+    updated.finalize_status()
+    return updated

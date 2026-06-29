@@ -1,52 +1,100 @@
 [
   {
-    "currency": "USD",
-    "document_type": "invoice",
-    "invoice_date": "2026-06-15",
-    "invoice_number": "INV-1001",
-    "source_file": "invoice_valid_001.txt",
-    "total_amount": 1200.5,
-    "vat_number": "IL123456789",
-    "vendor": "Acme Office Supplies"
-  },
-  {
-    "currency": "USD",
-    "document_type": "invoice",
-    "invoice_date": "2026-06-16",
-    "invoice_number": "INV-2002",
-    "source_file": "invoice_missing_vat.txt",
-    "total_amount": 430.0,
-    "vat_number": null,
-    "vendor": "Northwind Catering"
-  },
-  {
-    "currency": "USD",
-    "document_type": "invoice",
-    "invoice_date": "2026-06-17",
-    "invoice_number": "DUP-3003",
     "source_file": "invoice_duplicate_a.txt",
-    "total_amount": 880.0,
-    "vat_number": "IL555444333",
-    "vendor": "Bluewave Printing"
-  },
-  {
-    "currency": "USD",
     "document_type": "invoice",
-    "invoice_date": "2026-06-17",
-    "invoice_number": "DUP-3003",
-    "source_file": "invoice_duplicate_b.txt",
-    "total_amount": 880.0,
-    "vat_number": "IL555444333",
-    "vendor": "Bluewave Printing"
+    "vendor_name": "Bluewave Printing Ltd",
+    "vendor_tax_id": "510000321",
+    "invoice_number": "DUP-2026-007",
+    "invoice_date": "2026-06-19",
+    "currency": "ILS",
+    "subtotal": 750.0,
+    "vat": 135.0,
+    "total": 885.0,
+    "status": "needs_review",
+    "issues": [
+      "duplicate_invoice"
+    ],
+    "risk_flags": []
   },
   {
-    "currency": "USD",
-    "document_type": "receipt",
-    "invoice_date": "2026-06-18",
-    "invoice_number": "RECEIPT-9001",
+    "source_file": "invoice_duplicate_b.txt",
+    "document_type": "invoice",
+    "vendor_name": "Bluewave Printing Ltd",
+    "vendor_tax_id": "510000321",
+    "invoice_number": "DUP-2026-007",
+    "invoice_date": "2026-06-19",
+    "currency": "ILS",
+    "subtotal": 750.0,
+    "vat": 135.0,
+    "total": 885.0,
+    "status": "needs_review",
+    "issues": [
+      "duplicate_invoice"
+    ],
+    "risk_flags": []
+  },
+  {
+    "source_file": "invoice_missing_vat.txt",
+    "document_type": "invoice",
+    "vendor_name": "Green Cleaning Services",
+    "vendor_tax_id": "515999111",
+    "invoice_number": "GC-455",
+    "invoice_date": "2026-06-21",
+    "currency": "ILS",
+    "subtotal": 900.0,
+    "vat": null,
+    "total": 1062.0,
+    "status": "needs_review",
+    "issues": [
+      "missing_vat"
+    ],
+    "risk_flags": []
+  },
+  {
+    "source_file": "invoice_valid_001.txt",
+    "document_type": "invoice",
+    "vendor_name": "Acme Office Supplies Ltd",
+    "vendor_tax_id": "514123456",
+    "invoice_number": "INV-2026-001",
+    "invoice_date": "2026-06-20",
+    "currency": "ILS",
+    "subtotal": 1000.0,
+    "vat": 180.0,
+    "total": 1180.0,
+    "status": "approved",
+    "issues": [],
+    "risk_flags": []
+  },
+  {
+    "source_file": "malicious_invoice.txt",
+    "document_type": "invoice",
+    "vendor_name": "Suspicious Vendor",
+    "vendor_tax_id": null,
+    "invoice_number": "BAD-001",
+    "invoice_date": "2026-06-22",
+    "currency": "ILS",
+    "subtotal": 500.0,
+    "vat": 90.0,
+    "total": 590.0,
+    "status": "rejected",
+    "issues": [],
+    "risk_flags": [
+      "suspicious_instruction_detected"
+    ]
+  },
+  {
     "source_file": "receipt_valid_001.txt",
-    "total_amount": 89.4,
-    "vat_number": null,
-    "vendor": "Metro Travel Services"
+    "document_type": "receipt",
+    "vendor_name": "Metro Travel Services",
+    "vendor_tax_id": null,
+    "invoice_number": "RECEIPT-9001",
+    "invoice_date": "2026-06-18",
+    "currency": "ILS",
+    "subtotal": 89.4,
+    "vat": null,
+    "total": 89.4,
+    "status": "approved",
+    "issues": [],
+    "risk_flags": []
   }
 ]

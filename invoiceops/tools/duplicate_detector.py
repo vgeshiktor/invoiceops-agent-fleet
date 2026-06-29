@@ -4,37 +4,36 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from invoiceops.schemas import AnomalyFinding, ExtractedInvoice
+from invoiceops.schemas import InvoiceRecord
 
 
-def detect_duplicates(invoices: list[ExtractedInvoice]) -> dict[str, list[AnomalyFinding]]:
-    groups: dict[tuple[str, str], list[ExtractedInvoice]] = defaultdict(list)
+def detect_duplicates(invoices: list[InvoiceRecord]) -> list[InvoiceRecord]:
+    updated = [invoice.model_copy(deep=True) for invoice in invoices]
+    by_invoice_number: dict[str, list[InvoiceRecord]] = defaultdict(list)
+    by_vendor_amount_date: dict[tuple[str, float, str], list[InvoiceRecord]] = defaultdict(list)
 
-    for invoice in invoices:
-        if not invoice.vendor or not invoice.invoice_number:
+    for invoice in updated:
+        if invoice.invoice_number:
+            by_invoice_number[invoice.invoice_number.casefold()].append(invoice)
+        if invoice.vendor_name and invoice.total is not None and invoice.invoice_date:
+            key = (invoice.vendor_name.casefold(), invoice.total, invoice.invoice_date)
+            by_vendor_amount_date[key].append(invoice)
+
+        if (
+            invoice.subtotal is not None
+            and invoice.vat is not None
+            and invoice.total is not None
+            and round(invoice.subtotal + invoice.vat, 2) != round(invoice.total, 2)
+        ):
+            invoice.add_issue("vat_math_mismatch")
+
+    for group in list(by_invoice_number.values()) + list(by_vendor_amount_date.values()):
+        if len(group) < 2:
             continue
-        groups[(invoice.vendor.casefold(), invoice.invoice_number.casefold())].append(invoice)
+        for invoice in group:
+            invoice.add_issue("duplicate_invoice")
 
-    findings: dict[str, list[AnomalyFinding]] = {}
+    for invoice in updated:
+        invoice.finalize_status()
 
-    for duplicate_group in groups.values():
-        if len(duplicate_group) < 2:
-            continue
-
-        related_files = sorted(invoice.source_file for invoice in duplicate_group)
-        message = (
-            "Duplicate invoice number detected for vendor "
-            f"{duplicate_group[0].vendor}: {duplicate_group[0].invoice_number}."
-        )
-
-        for invoice in duplicate_group:
-            findings.setdefault(invoice.source_file, []).append(
-                AnomalyFinding(
-                    code="duplicate_invoice",
-                    severity="medium",
-                    message=message,
-                    related_files=related_files,
-                )
-            )
-
-    return findings
+    return updated

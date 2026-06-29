@@ -2,19 +2,25 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Deliver a runnable InvoiceOps MVP that processes local text fixtures into reviewed accounting artifacts.
+**Goal:** Deliver a strict MVP-aligned InvoiceOps demo that turns local invoice fixtures into validated accounting outputs.
 
-**Architecture:** A CLI orchestrates five agent stages. Each agent delegates deterministic work to small helpers so the workflow stays testable, while the orchestration backend can advertise Google ADK when available and otherwise run locally without external dependencies.
+**Architecture:** A five-stage pipeline keeps the agent handoff model while moving the public contract to exact MVP behavior: Pydantic schemas, deterministic parsing, strict status routing, and restricted local-file server access.
 
-**Tech Stack:** Python 3.11+, argparse CLI, pytest evals, dataclass-based schemas, optional Google ADK compatibility, JSON/CSV/Markdown artifact writers
+**Tech Stack:** Python 3.11+, argparse CLI, Pydantic, pytest, optional FastAPI, JSON/CSV/Markdown artifact writers
 
 ---
 
-### Delivered Scope
+### Delivered scope
 
-- CLI command: `run --input-dir --output-dir --approval-mode`
-- Shared runtime types for documents, findings, review items, and export bundles
-- Deterministic tools for file reading, text parsing, policy checks, duplicate detection, security scanning, and artifact writing
-- Agent modules for intake, extraction, policy, anomaly, and reporting
-- Updated sample fixtures that represent valid, duplicate, missing-VAT, irrelevant, and malicious scenarios
-- Evals that cover the full MVP flow
+- CLI command: `python -m invoiceops run --input samples/inbox --output outputs`
+- Shared Pydantic models: `DocumentCandidate`, `InvoiceRecord`, and `ExportBundle`
+- Deterministic helpers for file reading, parsing, policy validation, anomaly detection, security scanning, and report writing
+- Restricted local-file server with `list_documents`, `read_document`, and `write_output`
+- Sample fixtures and snapshots aligned to the exact MVP scenarios
+- Evals for extraction, policy, duplicates, security, CLI outputs, and MCP path restrictions
+
+### Hard boundaries
+
+- Local-only input and output
+- No OCR or PDF implementation in the current MVP
+- No Gmail, Drive, database, auth, UI, or deployment scope
