@@ -49,3 +49,36 @@ def test_same_invoice_number_for_different_vendors_is_not_flagged() -> None:
     reviewed = detect_duplicates(invoices)
 
     assert all("duplicate_invoice" not in invoice.issues for invoice in reviewed)
+
+
+def test_same_vendor_and_reference_for_receipt_and_invoice_are_not_flagged() -> None:
+    invoices = [
+        InvoiceRecord(
+            source_file="invoice.txt",
+            document_type="invoice",
+            vendor_name="Vendor A",
+            vendor_tax_id="100",
+            invoice_number="INV-123",
+            invoice_date="2026-06-20",
+            currency="ILS",
+            subtotal=100.0,
+            vat=18.0,
+            total=118.0,
+        ),
+        InvoiceRecord(
+            source_file="receipt.txt",
+            document_type="receipt",
+            vendor_name="Vendor A",
+            vendor_tax_id="100",
+            invoice_number="INV-123",
+            invoice_date="2026-06-20",
+            currency="ILS",
+            subtotal=100.0,
+            vat=18.0,
+            total=118.0,
+        ),
+    ]
+
+    reviewed = detect_duplicates(invoices)
+
+    assert all("duplicate_invoice" not in invoice.issues for invoice in reviewed)

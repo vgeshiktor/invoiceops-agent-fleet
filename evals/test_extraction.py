@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from invoiceops.agents import adk_available
 from invoiceops.config import InputConfig, InvoiceOpsConfig
 from invoiceops.pipeline import run_pipeline
 from invoiceops.tools.invoice_parser import parse_invoice_text
@@ -90,3 +91,23 @@ def test_run_pipeline_honors_custom_supported_extensions(tmp_path: Path) -> None
     )
 
     assert [invoice.source_file for invoice in bundle.invoices] == ["invoice.custom"]
+
+
+def test_adk_available_returns_false_when_parent_package_is_missing(monkeypatch) -> None:
+    def raising_find_spec(name: str):
+        raise ModuleNotFoundError("No module named 'google'")
+
+    monkeypatch.setattr("invoiceops.agents.find_spec", raising_find_spec)
+
+    assert adk_available() is False
+
+
+def test_run_pipeline_reports_actual_backend_when_adk_is_available(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr("invoiceops.pipeline.adk_available", lambda: True)
+
+    bundle = run_pipeline(input_dir=SAMPLES_DIR, output_dir=tmp_path / "outputs")
+
+    assert bundle.orchestration_backend == "local-sequential"
