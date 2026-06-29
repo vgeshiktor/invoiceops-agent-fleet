@@ -6,7 +6,7 @@
 
 **Architecture:** The repository will be created as a minimal Python package with skeletal modules and fixture/test placeholders. Metadata will be intentionally small so the first commit establishes structure without prematurely defining implementation details.
 
-**Tech Stack:** Python, setuptools, git, GitHub CLI
+**Tech Stack:** Python 3.11+, Pydantic, optional FastAPI, Typer or argparse CLI, pytest, optional pandas, Google ADK or lightweight agent wrappers, setuptools, git, GitHub CLI
 
 ---
 

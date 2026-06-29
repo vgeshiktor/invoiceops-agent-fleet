@@ -17,6 +17,16 @@ The repository is a lightweight Python package scaffold centered on the `invoice
 
 The initial commit prioritizes structure over behavior. Python modules remain placeholders, sample input and expected-output fixtures exist as inert seed files, and evaluation files exist as empty anchors for later tests.
 
+## Tech Stack
+
+- Python 3.11+
+- Google ADK or lightweight in-repo agent wrappers for agent orchestration
+- Typer or `argparse` for the CLI surface
+- Pydantic for schemas and validation
+- FastAPI as an optional API layer
+- pytest for evaluations
+- pandas as an optional CSV-processing dependency
+
 ## File Responsibilities
 
 - `invoiceops/`: root Python package for CLI, config, schemas, and pipeline orchestration.
@@ -45,4 +55,4 @@ Verification is structural:
 - no invoice-processing logic
 - no runnable CLI workflow
 - no implemented tests
-- no dependency-heavy setup
+- no forced API or data-processing runtime when those layers are not needed
