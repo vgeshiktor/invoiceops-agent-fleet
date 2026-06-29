@@ -50,7 +50,7 @@ def run_pipeline(
         accounting_export_path=accounting_export_path,
         exceptions_report_path=exceptions_report_path,
         review_queue_path=review_queue_path,
-        orchestration_backend="google-adk" if adk_available() else "local-sequential",
+        orchestration_backend="local-sequential",
         total_documents_scanned=len(documents),
     )
 
