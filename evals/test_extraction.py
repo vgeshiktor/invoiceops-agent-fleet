@@ -93,6 +93,17 @@ def test_run_pipeline_honors_custom_supported_extensions(tmp_path: Path) -> None
     assert [invoice.source_file for invoice in bundle.invoices] == ["invoice.custom"]
 
 
+def test_run_pipeline_reports_local_backend_when_adk_is_unavailable(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr("invoiceops.pipeline.adk_available", lambda: False)
+
+    bundle = run_pipeline(input_dir=SAMPLES_DIR, output_dir=tmp_path / "outputs")
+
+    assert bundle.orchestration_backend == "local-sequential"
+
+
 def test_adk_available_returns_false_when_parent_package_is_missing(monkeypatch) -> None:
     def raising_find_spec(name: str):
         raise ModuleNotFoundError("No module named 'google'")
@@ -110,4 +121,4 @@ def test_run_pipeline_reports_actual_backend_when_adk_is_available(
 
     bundle = run_pipeline(input_dir=SAMPLES_DIR, output_dir=tmp_path / "outputs")
 
-    assert bundle.orchestration_backend == "local-sequential"
+    assert bundle.orchestration_backend == "local-sequential+adk-installed"

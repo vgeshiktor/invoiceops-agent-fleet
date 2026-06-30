@@ -50,9 +50,15 @@ def run_pipeline(
         accounting_export_path=accounting_export_path,
         exceptions_report_path=exceptions_report_path,
         review_queue_path=review_queue_path,
-        orchestration_backend="local-sequential",
+        orchestration_backend=_orchestration_backend(),
         total_documents_scanned=len(documents),
     )
+
+
+def _orchestration_backend() -> str:
+    if adk_available():
+        return "local-sequential+adk-installed"
+    return "local-sequential"
 
 
 def _merge_risk_flags(
