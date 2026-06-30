@@ -1,4 +1,4 @@
-"""Restricted local-file server for the InvoiceOps MVP."""
+"""Restricted local-file MCP-style tool for the InvoiceOps MVP."""
 
 from __future__ import annotations
 
