@@ -110,6 +110,12 @@ This MVP stays intentionally local and deterministic:
 
 PDF ingestion is not implemented in the current MVP. The supported demo inputs are `.txt`, `.md`, and `.json`.
 
+## Limitations
+
+- This MVP uses synthetic local fixtures.
+- It does not process real emails, PDFs, scans, or private business data.
+- ADK integration is represented as architecture-compatible agent roles and runtime availability metadata, not as full ADK orchestration.
+
 ## Kaggle submission story
 
 - Title: `InvoiceOps Agent Fleet: Safe Multi-Agent Invoice Review for Accounting Handoff`
